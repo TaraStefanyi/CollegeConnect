@@ -1,8 +1,7 @@
-package com.college.collegeconnect
+package com.college.collegeconnect.security
 
 import android.content.Context
 import com.college.collegeconnect.datamodels.SaveSharedPreference
-import com.college.collegeconnect.security.Security
 import io.kotest.core.spec.style.StringSpec
 import io.mockk.*
 import strikt.api.expectThat

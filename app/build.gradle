@@ -3,8 +3,131 @@ apply plugin: "com.google.gms.google-services"
 apply plugin: "kotlin-android"
 apply plugin: "kotlin-android-extensions"
 apply plugin: "kotlin-kapt"
+apply plugin: 'jacoco'
+
+jacoco {
+    toolVersion = "0.8.5"
+}
+
+tasks.withType(Test) {
+    jacoco.includeNoLocationClasses = true
+    jacoco.excludes = ['jdk.internal.*']
+    // see related issue https://github.com/gradle/gradle/issues/5184#issuecomment-457865951
+}
+
+project.afterEvaluate {
+
+    (android.hasProperty('applicationVariants')
+            ? android.'applicationVariants'
+            : android.'libraryVariants')
+            .all { variant ->
+                def variantName = variant.name
+                def unitTestTask = "test${variantName.capitalize()}UnitTest"
+                def androidTestCoverageTask = "create${variantName.capitalize()}CoverageReport"
+
+                tasks.create(name: "${unitTestTask}Coverage", type: JacocoReport, dependsOn: [
+                        "$unitTestTask",
+                        "$androidTestCoverageTask"
+                ]) {
+                    group = "Reporting"
+                    description = "Generate Jacoco coverage reports for the ${variantName.capitalize()} build"
+
+                    reports {
+                        html.enabled = true
+                        xml.enabled = true
+                        csv.enabled = true
+                    }
+
+                    def excludes = [
+                        // data binding
+                        'android/databinding/**/*.class',
+                        '**/android/databinding/*Binding.class',
+                        '**/android/databinding/*',
+                        '**/androidx/databinding/*',
+                        '**/BR.*',
+                        // android
+                        '**/R.class',
+                        '**/R$*.class',
+                        '**/BuildConfig.*',
+                        '**/Manifest*.*',
+                        '**/*Test*.*',
+                        'android/**/*.*',
+                        // butterKnife
+                        '**/*$ViewInjector*.*',
+                        '**/*$ViewBinder*.*',
+                        // dagger
+                        '**/*_MembersInjector.class',
+                        '**/Dagger*Component.class',
+                        '**/Dagger*Component$Builder.class',
+                        '**/*Module_*Factory.class',
+                        '**/di/module/*',
+                        '**/*_Factory*.*',
+                        '**/*Module*.*',
+                        '**/*Dagger*.*',
+                        '**/*Hilt*.*',
+                        // kotlin
+                        '**/*MapperImpl*.*',
+                        '**/*$ViewInjector*.*',
+                        '**/*$ViewBinder*.*',
+                        '**/BuildConfig.*',
+                        '**/*Component*.*',
+                        '**/*BR*.*',
+                        '**/Manifest*.*',
+                        '**/*$Lambda$*.*',
+                        '**/*Companion*.*',
+                        '**/*Module*.*',
+                        '**/*Dagger*.*',
+                        '**/*Hilt*.*',
+                        '**/*MembersInjector*.*',
+                        '**/*_MembersInjector.class',
+                        '**/*_Factory*.*',
+                        '**/*_Provide*Factory*.*',
+                        '**/*Extensions*.*',
+                        // sealed and data classes
+                        '**/*$Result.*',
+                        '**/*$Result$*.*'
+                    ]
+
+                    def javaClasses = fileTree(dir: variant.javaCompileProvider.get().destinationDir,
+                            excludes: excludes)
+                    def kotlinClasses = fileTree(dir: "${buildDir}/tmp/kotlin-classes/${variantName}",
+                            excludes: excludes)
+
+                    classDirectories.setFrom(files([
+                            javaClasses,
+                            kotlinClasses
+                    ]))
+
+                    def variantSourceSets = variant.sourceSets.java.srcDirs.collect { it.path }.flatten()
+                    sourceDirectories.setFrom(project.files(variantSourceSets))
+
+                    def androidTestsData = fileTree(dir: "${buildDir}/outputs/code_coverage/${variantName}AndroidTest/connected/", includes: ["**/*.ec"])
+
+                    executionData(files([
+                            "$project.buildDir/jacoco/${unitTestTask}.exec",
+                            androidTestsData
+                    ]))
+                }
+
+            }
+}
 
 android {
+
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/LICENSE.md'
+        exclude 'META-INF/LICENSE-notice.md'
+        exclude 'META-INF/license.txt'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/NOTICE.md'
+        exclude 'META-INF/notice.txt'
+        exclude 'META-INF/ASL2.0'
+        exclude("META-INF/*.kotlin_module")
+    }
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -19,7 +142,7 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.college.collegeconnect"
-        minSdkVersion 23
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "0.1.0"
@@ -51,6 +174,7 @@ android {
             signingConfig signingConfigs.debug
             minifyEnabled false
             versionNameSuffix "-debug-version"
+            testCoverageEnabled true
         }
         release {
 //            signingConfig signingConfigs.release

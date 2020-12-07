@@ -68,7 +68,7 @@ class FirebaseUserInfoTest : StringSpec({
         }
     }
 
-    "uploadUserInfo - null user" {
+    "uploadUserInfo - user is null" {
         withMocks {
             every { FirebaseAuth.getInstance().currentUser } returns null
             FirebaseUserInfo.uploadUserInfo(User(), ctx)
@@ -105,7 +105,7 @@ class FirebaseUserInfoTest : StringSpec({
         }
     }
 
-    "getUserInfo - error" {
+    "getUserInfo - Firebase error" {
         withMocks {
             val error = mockk<FirebaseFirestoreException>()
             every { error.message } returns "error message"
@@ -116,7 +116,7 @@ class FirebaseUserInfoTest : StringSpec({
         }
     }
 
-    "getUserInfo - null user" {
+    "getUserInfo - user is null" {
         withMocks {
             every { FirebaseAuth.getInstance().currentUser } returns null
             FirebaseUserInfo.getUserInfo(ctx) { }

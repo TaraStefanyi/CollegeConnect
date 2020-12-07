@@ -26,9 +26,6 @@ import com.college.collegeconnect.datamodels.Constants;
 import com.college.collegeconnect.datamodels.Upload;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -78,13 +75,6 @@ public class DownloadNotes extends AppCompatActivity {
         tv = findViewById(R.id.tvtitle);
         tv.setText("Notes");
 
-        //AdMob
-        MobileAds.initialize(this, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-
-            }
-        });
         mAdView = findViewById(R.id.adViewNotes);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);

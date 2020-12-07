@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.college.collegeconnect.datamodels.SaveSharedPreference;
+import com.google.android.gms.ads.MobileAds;
 
 
 public class Splash extends AppCompatActivity {
@@ -20,17 +21,19 @@ public class Splash extends AppCompatActivity {
 
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        if (SaveSharedPreference.getCheckedItem(Splash.this) == 0)
+        if (SaveSharedPreference.getCheckedItem(this) == 0)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
-        else if (SaveSharedPreference.getCheckedItem(Splash.this) == 1)
+        else if (SaveSharedPreference.getCheckedItem(this) == 1)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
-        else if (SaveSharedPreference.getCheckedItem(Splash.this) == 2)
+        else if (SaveSharedPreference.getCheckedItem(this) == 2)
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        Intent i = new Intent(Splash.this, OnBoardingScreenm.class);
-        startActivity(i);
+        MobileAds.initialize(this);
+        if (SaveSharedPreference.getRef(this)) {
+            startActivity(new Intent(this, MainActivity.class));
+        } else {
+            startActivity( new Intent(Splash.this, OnBoardingScreenm.class));
+        }
         finish();
-
-
     }
 }

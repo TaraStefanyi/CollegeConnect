@@ -23,10 +23,6 @@ public class OnBoardingScreenm extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (SaveSharedPreference.getRef(this)) {
-            startActivity(new Intent(this, MainActivity.class));
-            finish();
-        }
         setContentView(R.layout.activity_on_boarding_screenm);
 
         final ViewPager pager = findViewById(R.id.viewPager);

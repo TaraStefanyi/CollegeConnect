@@ -31,7 +31,6 @@ import android.widget.TextView;
 import com.college.collegeconnect.R;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -88,12 +87,6 @@ public class EventWebView extends Fragment {
             TextView tv = getActivity().findViewById(R.id.tvtitle);
             tv.setText("Event Details");
         }
-        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {
-
-            }
-        });
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
 

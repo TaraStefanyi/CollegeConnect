@@ -25,7 +25,6 @@ import com.college.collegeconnect.datamodels.Upload;
 import com.college.collegeconnect.models.UploadViewModel;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.MobileAds;
 import com.google.android.material.snackbar.Snackbar;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,8 +54,6 @@ public class MyUploadsActivity extends AppCompatActivity {
         tv = findViewById(R.id.tvtitle);
         tv.setText("My Uploads");
 
-        MobileAds.initialize(this, initializationStatus -> {
-        });
         mAdView = findViewById(R.id.adMyNotes);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
